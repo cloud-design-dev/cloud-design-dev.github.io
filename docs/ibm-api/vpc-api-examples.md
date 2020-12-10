@@ -21,7 +21,8 @@ API requests require a major version in the path (/v1/) and a date-based version
 ## Create a VPC
 
 ```shell
-$ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/vpcs?version=YYYY-MM-DD&generation=2" -H "Authorization: ${iam_token}" \
+$ curl -X POST -H "Authorization: ${iam_token}" \
+"https://us-south.iaas.cloud.ibm.com/v1/vpcs?version=YYYY-MM-DD&generation=2" \
 -d '{
     "address_prefix_management": "auto",
     "name": "rest-demo-vpc",
@@ -34,7 +35,8 @@ $ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/vpcs?version=YYYY-MM-DD&g
 ## Create a Public Gateway
 
 ```shell
-$ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/public_gateways?version=YYYY-MM-DD&generation=2" -H "Authorization: ${iam_token}" \
+$ curl -X POST -H "Authorization: ${iam_token}" \
+"https://us-south.iaas.cloud.ibm.com/v1/public_gateways?version=YYYY-MM-DD&generation=2" \
 -d '{
 	"name": "rest-demo-public-gateway",
 	"vpc": {
@@ -57,7 +59,8 @@ This example uses `total_ipv4_address_count` to carve out a set number of IPs fr
  - **PUBLIC_GATEWAY_ID:** The Public Gateway ID to use for this subnet.
 
 ```shell 
-$ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-DD&generation=2" -H "Authorization: ${iam_token}" \
+$ curl -X POST -H "Authorization: ${iam_token}" \
+"https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-DD&generation=2" \
 -d '{
     "name": "rest-demo-subnet-1",
     "total_ipv4_address_count": 32,
@@ -81,7 +84,8 @@ $ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-D
 This example uses `ipv4_cidr_block` to carve out a specific CIDR block from the default [Address Prefix](https://cloud.ibm.com/docs/vpc?topic=vpc-vpc-behind-the-curtain#address-prefixes). 
 
 ```shell
-$ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-DD&generation=2" -H "Authorization: ${iam_token}" \
+$ curl -X POST -H "Authorization: ${iam_token}" \
+"https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-DD&generation=2" \
 -d '{
     "name": "rest-demo-subnet-2",
     "ipv4_cidr_block": "10.240.0.0/24",
@@ -99,3 +103,4 @@ $ curl -X POST "https://us-south.iaas.cloud.ibm.com/v1/subnets?version=YYYY-MM-D
         "id": "NETWORK_ACL_ID"
     }
 }'
+```
