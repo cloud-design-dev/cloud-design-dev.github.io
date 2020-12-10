@@ -9,4 +9,4 @@ has_children: true
 
 ![Self-editing Diagram](vpc-template.svg)
 
-<a href="http://jgraph.github.io/drawio-github/self-editing.svg" target="_blank">self-editing.svg</a> is an SVG file with embedded PNG data (as a workaround for missing foreignObject support in Internet Explorer). This combines an image format (eg. for <img src="...") with scripting for GitHub integration. (Click on the link, not the image to enable editing.)
+<a href="https://app.diagrams.net/#Uhttps%3A%2F%2Fraw.githubusercontent.com%2Fcloud-design-dev%2Fcloud-design-dev.github.io%2Fmain%2Fdocs%2Fdiagrams%2Fvpc-template.svg" target="_blank">Edit As New</a>
