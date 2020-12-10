@@ -5,6 +5,10 @@ parent: IBM Cloud Rest API
 nav_order: 2
 ---
 
+# Overview
+This page shows examples of interacting with the IBM Cloud [VPC API](https://cloud.ibm.com/apidocs/vpc).  
+
+**Table of Contents:**
 - [Overview](#overview)
   * [Prerequisites](#prerequisites)
     + [Endpoints](#endpoints)
@@ -17,8 +21,6 @@ nav_order: 2
   * [Create a Block Volume](#create-a-block-volume)
   * [Attach a Block Volume to a Compute Instance](#attach-a-block-volume-to-a-compute-instance)
 
-# Overview
-This page shows examples of interacting with the IBM Cloud [VPC API](https://cloud.ibm.com/apidocs/vpc).  
 
 ## Prerequisites
  - You have a valid IAM Token as outlined [here](./index.md)
@@ -29,7 +31,6 @@ The endpoint is based on the region of the service and follows the convention `h
 
 ### Versioning
 API requests require a major version in the path (/v1/) and a date-based version as a query parameter in the format version=`YYYY-MM-DD`. You can use any date-based version up to the current date. Start development of new applications with the current date as a fixed value. See the [VPC API Change Log](https://cloud.ibm.com/docs/vpc?topic=vpc-api-change-log) for API changes. 
-
 
 ## Create a VPC
 VPC is a virtual network in IBM Cloud. It gives you cloud security, with the ability to scale dynamically, by providing fine-grained control over your virtual infrastructure and your network traffic segmentation.
