@@ -38,10 +38,9 @@ We will use the _resource service-instance_ operator to get our Cloud Object Sto
 $ ibmcloud resource service-instance <name-of-icos-instance> --output json | jq -r '.[].guid'
 ```
 
-> You will use the value returned by the above command in another command. Please note it.
+**Note:** You will use the value returned by the above command in another command. Please save it.
 
-#### Create a Service ID
-
+#### Create a Service ID  
 We will create a service ID to interact with our ICOS bucket. A service ID identifies a service or application similar to how a user ID identifies a user. We can assign specific access policies to the service ID that restrict permissions for using specific services.
 
 ```shell
@@ -54,7 +53,7 @@ This command simply returns the ID of the service-id that was created. This will
 ibmcloud iam service-id <name-of-your-service-id> --output json | jq -r '.[].id'
 ```
 
-> You will use the value returned by the above command in another command. Please note it.
+**Note:** You will use the value returned by the above command in another command. Please save it.
 
 #### Assign Service ID an access policy
 
@@ -65,11 +64,85 @@ ibmcloud iam service-policy-create <Service ID> --roles Writer --service-name cl
 ```
 
 #### Create Service Credentials for the Service ID
-
 Veeam uses HMAC credentials \(Secret Key/Access Key\) so we will need to generate some from cloud shell. We will be binding these new credentials to our Service ID
 
 ```shell
 $ ibmcloud resource service-key-create <name of service key> Writer --instance-id <Service Instance GUID> --service-id <Service ID> --parameters '{"HMAC":true}'
 ```
 
-> Save the **access\_key\_id** and **secret\_access\_key** as we will need these when we configure the scale out repository in Veeam.
+**Note:** Save the **access\_key\_id** and **secret\_access\_key** as we will need these when we configure the scale out repository in Veeam.
+
+## Prepare Windows Server Drive
+Upon initial login to Windows server you should see Server Manager. If not then launch Server Manager and from the left hand navigation select:
+
+* **File and Storage Services**
+* **Disks**
+* **The drive we want to use as our new Veeam Backup Repository**
+
+![Select second drive](https://dsc.cloud/quickshare/select-second-drive.png)
+
+In the Volumes view click on **Tasks** and select _New Volume_.  
+![New Volume](https://dsc.cloud/quickshare/volume-tasks-new-volume.png)
+
+This will start the new Volume Wizard. Under _Server and Disk_ select your local server and the drive where this volume will be created. Click **Next**  
+![Select server and drive](https://dsc.cloud/quickshare/server-and-disks.png)
+
+For both the **Size** and **Drive Letter** selections you can simply click Next as we are leaving these as default.
+
+When it comes the filesystem we will want to select _ReFS_ for the _File System_ and _64K_ for the _Allocation unit size_ and then click **Next**. After you have reviewed the volume creation details click **Create** to provision the volume.  
+![File System Settings](https://dsc.cloud/quickshare/file-system-settings.png)
+
+The drive is now ready to be used with Veeam.
+
+## Create New Veeam Backup Repository
+From the Veeam Backup and Replication console click **Backup Infrastructure** and then right click on **Backup Repositories** and select **Add backup repository** to launch the Repository creation wizard.
+
+![Add backup repository wizard](https://dsc.cloud/quickshare/add-backup-repository.png)
+
+Select _Direct Attached Storage_ in the first dialog box and _Microsoft Windows_ in the second. Give the backup repository a name and click **Next**  
+![](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-09-50-40.png)
+
+Select your local server and click Populate to list locally attached available drives. In my case I select `F` and select **Next**  
+![Select Repository Drive](https://dsc.cloud/quickshare/select-repo-drive.png)
+
+For both the _Repository_ and _Mount Server_ dialog boxes you can accept the defaults and just click **Next**
+
+On the review dialog box make sure to leave _Import existing backups automatically_ unchecked since we're starting off with a fresh set of backup job. Once you're satisfied everything looks correct click **Apply**.  
+![Create repository](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-09-55-55.png)
+
+**Note:** When you see a dialog box asking _Change the configuration backup location to the newly created repository?_ select **No**. If you select **Yes** the backup repository becomes un-usable for Scale out ICOS storage.
+
+## Add Scale Out Storage to Veeam
+
+From the Veeam Backup and Replication console click on **Backup Infrastructure** and then right click on **Add Scale out repository**:
+
+![Add Scale Out](https://dsc.cloud/quickshare/add-scale-out.png)
+
+Give the new Scale out repository a name and click **Next**
+
+. ![Name repository](https://dsc.cloud/quickshare/name-scale-out-repo.png)
+
+Under Performance Tier click **Add** and then select the newly created backup repository.  
+![Add backup repository to scale out](https://dsc.cloud/quickshare/add-repo-to-scale-out.png)
+
+Select _Extend scale-out with object storage_ and click the **Add** button. ![x](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-10-06-01.png)
+
+Select IBM Cloud Object Storage
+
+ ![x](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-10-07-19.png)
+
+Add the Cloud Object Storage endpoint for your bucket as well as the HMAC credentials we created earlier. The bucket that I am going to be offloading backups to was created as a us-south regional bucket. As such I am adding the private us-south endpoint `s3.private.us-south.cloud-object-storage.appdomain.cloud`. To see all available endpoints see [Object Storage Endpoints](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-endpoints).
+
+![Add endpoint](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-10-09-49.png)
+
+Next to credentials click Add. This is where you will add the HMAC keys that we generated previously. With those credentials added click Next. You will now select the COS bucket to use. Under Folder selection click **Browse** and click **Add Folder** to create a new directory within the bucket. Click **Next** to get to the Review page. If everything looks good click **Finish**.
+
+You are now dropped back in to the Scale out repository wizard. You can now set the **age out** policy for backups in this backup repository. Make sure the _Move backups to object storage_ checkbox is checked and set your policy. The default is 30 days.
+
+![](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-10-26-45.png)
+
+Click **Apply** and review the creation details. Click **Finish**.
+
+Make sure to select your newly created backup repository when creating new backup jobs to ensure that your backup roll-off operations run as expected.
+
+![Targeting new backup repository](https://dsc.cloud/quickshare/Shared-Image-2020-07-24-10-34-11.png)
