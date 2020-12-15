@@ -14,10 +14,10 @@ nav_order: 1
 
 ### Steps
 
-1. [IBM Cloud Pre-Work](ibm-cloud-pre-work.md)
-2. [Prepare Windows server drive to be used with Veeam](prepare-windows-server-drive.md)
-3. [Create new Backup Repository in Veeam](create-new-veeam-backup-repository.md)
-4. [Add IBM Cloud Object Storage as a Scale-Out Repository in Veeam](add-scale-out-storage-to-veeam.md) 
+1. [IBM Cloud Pre-Work](#ibm-cloud-pre-work)
+2. [Prepare Windows server drive to be used with Veeam](#prepare-windows-server-drive)
+3. [Create new Backup Repository in Veeam](#create-new-veeam-backup-repository)
+4. [Add IBM Cloud Object Storage as a Scale-Out Repository in Veeam](#add-scale-out-storage-to-veeam) 
 
 ### Links
 
