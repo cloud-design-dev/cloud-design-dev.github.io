@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Site to Site IPsec Tunnel to IBM Cloud VPC
+title: Site to Site IPsec Tunnel to IBM Cloud VPC VPNaaS
 parent: IBM Cloud VPC
 nav_order: 1
 ---
