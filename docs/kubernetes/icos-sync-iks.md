@@ -6,9 +6,7 @@ nav_order: 2
 ---
 
 # Overview
-In this guide I will show you how to sync ICOS bucket objects between accounts using [Code Engine](https://cloud.ibm.com/docs/codeengine). Code Engine provides a platform to unify the deployment of all of your container-based applications on a Kubernetes-based infrastructure. The Code Engine experience is designed so that you can focus on writing code without the need for you to learn, or even know about, Kubernetes.
-
-> Code Engine is currently an experimental offering and all resources are deleted every 7 days.
+In this guide I will show you how to sync ICOS bucket objects between accounts using Kubernetes. You can spin up 1 free IKS cluster on your account which will be automatically deleted after 30 days. 
 
 ## Steps
 * [Preparing Accounts](#preparing-accounts)
