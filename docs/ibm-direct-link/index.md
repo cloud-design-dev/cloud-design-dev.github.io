@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Terraform Examples 
-nav_order: 11
+title: IBM Cloud Direct Link
+nav_order: 7
 has_children: true
 ---

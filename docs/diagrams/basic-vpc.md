@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Basic VPC Diagram
-parent: Common diagrams  
+parent: IBM Cloud Diagrams  
 nav_order: 1
 ---
 

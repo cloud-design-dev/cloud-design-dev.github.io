@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Common diagrams 
-nav_order: 7
+title: IBM Cloud Diagrams 
+nav_order: 6
 has_children: true
 ---
 

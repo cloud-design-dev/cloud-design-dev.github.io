@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Terraform Examples 
-nav_order: 11
+title: IBM Cloud VPC
+nav_order: 5
 has_children: true
 ---
