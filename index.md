@@ -6,16 +6,18 @@ description: "Landing page for all my projects and code examples."
 permalink: /
 ---
 
-# Table of Contents  
+# Table of Contents
+ - [IBM Cloud Object Storage](ibm-cos/index.md)
+    - [Scale Out Veeam Repository with IBM Cloud Object Storage](ibm-cos/veeam-scale-out.md)
  - [IBM Cloud API Examples](ibm-api/index.md)
      - [Search API Examples](ibm-api/search-rest-api-examples.md)
      - [VPC API Examples](ibm-api/vpc-api-examples.md)
  - [IBM Code Engine](code-engine/index.md)
     - [Cross account Object Storage bucket sync with Code Engine](code-engine/cross-account-sync-ce.md)
     - [Build a container image from source control using Code Engine](code-engine/container-image-build-ce.md)
- - [IBM Cloud Object Storage](ibm-cos/index.md)
-    - [Scale Out Veeam Repository with IBM Cloud Object Storage](ibm-cos/veeam-scale-out.md)
- - [Diagrams](diagrams/index.md)
+ - [IBM Cloud VPC](ibm-vpc/index.md)
+ - [IBM Cloud Diagrams](diagrams/index.md) 
+ - [IBM Cloud Direct Link](ibm-direct-link/index.md)
  - [Kubernetes](kubernetes/index.md)
     - [Kubernetes Overview](kubernetes/overview.md)
     - [Cross account Object Storage bucket sync with free IKS Cluster](kubernetes/icos-sync-iks.md)
