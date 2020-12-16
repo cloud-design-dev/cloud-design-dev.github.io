@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Terraform Examples 
-nav_order: 4
+title: Kubernetes
+nav_order: 6
 has_children: true
 ---

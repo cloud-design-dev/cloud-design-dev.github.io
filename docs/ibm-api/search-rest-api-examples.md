@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Search and Tagging API
+title: Search API Examples
 parent: IBM Cloud Rest API
 nav_order: 1
 ---
