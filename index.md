@@ -26,5 +26,5 @@ permalink: /
     - [Kubernetes Overview](kubernetes/overview.md)
     - [Cross account Object Storage bucket sync with free IKS Cluster](kubernetes/icos-sync-iks.md)
  - [Terraform and Ansible](terraform/index.md)
-   - [Consul cluster in IBM Cloud VPC using Terraform and Ansible](terraform/vpc-consul.md)
+   
    - [Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform](terraform/vpc-wireguard.md)

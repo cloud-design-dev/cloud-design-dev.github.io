@@ -14,6 +14,8 @@ This is a collection of tutorials, guides and code samples for IBM Cloud.
 ## VPC
  - [Deploy OpenVPN server in VPC using Terraform and Ansible](https://github.com/l2fprod/ibmcloud-vpc-openvpn)
  - [VPC Diagram Exporter](https://github.com/l2fprod/vpc-diagram-exporter)
+ - [Consul cluster in IBM Cloud VPC using Terraform and Ansible](../terraform/vpc-consul.md)
+ - [Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform](../terraform/vpc-wireguard.md)
 
 ## Kubernetes
  - [Deploy a starter kit app to a Kubernetes cluster](https://cloud.ibm.com/docs/containers?topic=containers-tutorial-starterkit-kube)
