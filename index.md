@@ -21,6 +21,7 @@ permalink: /
    - [Basic VPC Diagram](diagrams/basic-vpc.md)
    - [Basic Classic Direct Link Diagram](diagrams/basic-dl.md)
  - [IBM Cloud Direct Link](ibm-direct-link/index.md)
+ - [IBM Cloud Tutorials, Tools, and Guides](ibm-guides-tutorials/index.md)
  - [Kubernetes](kubernetes/index.md)
     - [Kubernetes Overview](kubernetes/overview.md)
     - [Cross account Object Storage bucket sync with free IKS Cluster](kubernetes/icos-sync-iks.md)
