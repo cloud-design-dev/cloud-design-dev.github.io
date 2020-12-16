@@ -133,7 +133,7 @@ $ curl -X POST -H "Authorization: ${iam_token}" \
 ## Create a Security Group with Rules
 A [security group](https://cloud.ibm.com/docs/vpc?topic=vpc-security-in-your-vpc#sgs-security) acts as a Stateful virtual firewall with a collection of rules that specify whether to allow or deny traffic for an associated compute instance. In this example we are allowing inbound ICMP and SSH and allowing all for outbound traffic.
 
- - **VPC_ID:** The ID of the VPC where the subnet will be created. 
+ - **VPC_ID:** The ID of the VPC where the security group will be created. 
 
 ```shell 
 $ curl -X POST -H "Authorization: ${iam_token}" \
@@ -197,6 +197,52 @@ $ curl -X POST -H "Authorization: ${iam_token}" \
     "id": "RESOURCE_GROUP_ID"
   }
 }'
+```
+
+## Create a Compute Instance
+This example will create a new VPC compute instance. 
+ - **VPC_ID:** The ID of the VPC where the subnet will be created.
+ - **SUBNET_ID:** The ID of the Subnet to use for the compute instance. 
+ - **IMAGE_ID:** The ID of OS image to use.  
+ - **SSH_KEY_ID:** The ID of the SSH key that will be added to the compute instance.
+
+```shell
+curl -X POST -H "Authorization: ${iam_token}" \
+"https://us-south.iaas.cloud.ibm.com/v1/instances?version=2020-12-01&generation=2" \
+-d '{
+    "boot_volume_attachment": {
+      "volume": {
+            "name": "rest-api-test-boot-volume",
+            "profile": {
+                "name": "general-purpose"
+            }
+        }
+    },
+    "primary_network_interface": {
+      "name": "rest-api-test-nic",
+      "subnet": {
+        "id": "SUBNET_ID"
+      }
+    },
+    "name": "rest-api-test-instance",
+    "zone": {
+      "name": "us-south-1"
+    },
+    "vpc": {
+      "id": "VPC_ID"
+    },
+    "profile": {
+      "name": "cx2-2x4"
+    },
+    "image": {
+      "id": "IMAGE_ID"
+    },
+    "keys": [
+      {
+        "id": "SSH_KEY_ID"
+      }
+    ]
+  }'
 ```
 
 ## Attach a Block Volume to a Compute Instance
