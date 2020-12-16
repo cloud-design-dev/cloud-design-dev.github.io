@@ -26,6 +26,8 @@ permalink: /
    - [VPC](docs/ibm-guides-tutorials/index.md#vpc)
    - [Kubernetes](docs/ibm-guides-tutorials/index.md#kubernetes)
    - [Code Engine](docs/ibm-guides-tutorials/index.md#code-engine)
+   - [Classic Infrastructure](docs/ibm-guides-tutorials/index.md#classic-infrastructure)
+   - [Cloud Functions](docs/ibm-guides-tutorials/index.md#cloud-functions)
  - [Kubernetes](docs/kubernetes/index.md)
     - [Kubernetes Overview](docs/kubernetes/overview.md)
     - [Cross account Object Storage bucket sync with free IKS Cluster](docs/kubernetes/icos-sync-iks.md)
