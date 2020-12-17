@@ -2,6 +2,7 @@
 layout: default
 title: IBM Cloud Rest API 
 nav_order: 3
+parent: Home
 has_children: true
 ---
 
