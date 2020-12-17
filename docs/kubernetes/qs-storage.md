@@ -143,16 +143,16 @@ nfs-client  cluster.local/nfs-client-nfs-client-provisioner  2s
 
 Check that NFS is available as a storageclass.
 
-```shell
+{% highlight shell %}
 $ kubectl get storageclasses | grep nfs-client
 nfs-client                   cluster.local/nfs-client-nfs-client-provisioner   104s
-```
+{% endhighlight %}
 
 ### Deploy example pod and write to mounted persistent volume
 Here is an example Persistent Volume Claim yaml file.  
 **qs-test-pvc.yml**
 
-```yaml
+{% highlight yaml %}
  apiVersion: v1
  kind: PersistentVolumeClaim
  metadata:
@@ -164,7 +164,7 @@ Here is an example Persistent Volume Claim yaml file.
    resources:
      requests:
        storage: 2Gi
-```
+{% endhighlight %}
 
 **Create pvc**
 
