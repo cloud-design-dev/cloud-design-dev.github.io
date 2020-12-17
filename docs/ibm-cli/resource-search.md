@@ -6,8 +6,9 @@ nav_order: 1
 ---
 
 # Command line examples for _ibmcloud resource search_
-IaaS = Classic Infrastructure (SoftLayer) Resources. 
-Cloud = IBM Cloud Resources. 
+
+ - IaaS = Classic Infrastructure (SoftLayer) Resources.  
+ - Cloud = IBM Cloud Resources.  
 
 
 ## Search Cloud Resources (Cloud)
