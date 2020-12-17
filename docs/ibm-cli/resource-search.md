@@ -2,6 +2,7 @@
 layout: default
 title: Searching with the IBM Cloud CLI
 parent: IBM Cloud CLI
+grand_parent: Home
 nav_order: 1
 ---
 
