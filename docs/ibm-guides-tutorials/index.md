@@ -2,6 +2,7 @@
 layout: default
 title: IBM Cloud Tutorials, Tools, and Guides
 nav_order: 8
+parent: Home
 ---
 This is a collection of tutorials, guides and code samples for IBM Cloud. 
 
