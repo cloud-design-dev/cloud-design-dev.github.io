@@ -14,7 +14,6 @@ This is a collection of tutorials, guides and code samples for IBM Cloud.
 
 ## VPC
  - [Deploy OpenVPN server in VPC using Terraform and Ansible](https://github.com/l2fprod/ibmcloud-vpc-openvpn)
- - [VPC Diagram Exporter](https://github.com/l2fprod/vpc-diagram-exporter)
  - [Consul cluster in IBM Cloud VPC using Terraform and Ansible](../terraform/vpc-consul.md)
  - [Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform](../terraform/vpc-wireguard.md)
  - [Site to Site IPsec Tunnel to IBM Cloud VPC VPNaaS](../ibm-vpc/vpc-vpnaas.md)
@@ -44,3 +43,17 @@ This is a collection of tutorials, guides and code samples for IBM Cloud.
 ## Cloud Functions
  - [Serverless web application and API using Object Storage](https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-serverless-api-webapp)
  - [Build a database-driven Slackbot](https://cloud.ibm.com/docs/solution-tutorials?topic=solution-tutorials-slack-chatbot-database-watson)
+
+## Terraform
+ - [Deploying IBM Cloud infrastructure using Terraform and Gitlab](../terraform/ibm-gitlab.md)
+ - [Consul cluster in IBM Cloud VPC using Terraform and Ansible](../terraform/vpc-consul.md)
+ - [Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform](../terraform/vpc-wireguard.md)
+ - [Deploy a VPC, a Bastion host, and a set of webservers across all 3 zones in a VPC Region](https://github.com/greyhoundforty/MZR-Deployment-in-IBM-Cloud-VPC)
+
+## Schematics
+ - [Deploy an IBM Cloud VPC Bastion host using Schematics](https://github.com/greyhoundforty/ibmcloud-vpc-bastion-schematics)
+ - [Deploy an IKS Cluster in VPC using Schematics](https://github.com/greyhoundforty/ibmcloud-iks-new-vpc-schematics)
+
+## Utilities
+ - [VPC Diagram Exporter](https://github.com/l2fprod/vpc-diagram-exporter) - Export IBM Cloud VPC resources to an SVG or PNG diagram
+ - [bxshell](https://github.com/l2fprod/bxshell) - A ton of IBM Cloud tools in one Docker image and a few shell scripts
