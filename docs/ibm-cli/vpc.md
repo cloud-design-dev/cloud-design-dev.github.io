@@ -43,7 +43,7 @@ ibmcloud is instance INSTANCE_ID --json | jq -r '.primary_network_interface.prim
 ```
 
 ### Grab ID of compute instance based on name
- - INSTANCE_ID: The compute instance ID
+ - NAME_OF_INSTANCE: The name of the compute instance
 
 ```shell
 ibmcloud is instances --output json | jq -r '.[] | select(.name=="NAME_OF_INSTANCE") | .id'

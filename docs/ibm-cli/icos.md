@@ -24,7 +24,7 @@ ibmcloud cos upload --bucket NAME_OF_BUCKET --key NAME_FOR_OBJECT \
 --file /path/to/object --region ICOS_REGION
 ```
 
-## Create HMAC credentials for S3 clients**
+## Create HMAC credentials for S3 clients
 ```shell
 ibmcloud resource service-key-create NAME_OF_SERVICE_KEY Writer --instance-name NAME_OF_COS_INSTANCE --parameters '{"HMAC":true}'
 ```
