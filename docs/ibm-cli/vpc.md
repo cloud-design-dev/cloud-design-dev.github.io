@@ -12,6 +12,15 @@ Examples of interacting with the IBM Cloud VPC CLI Plugin.
 
 ## Subnet
 
+### Get all Subnets in a VPC and return their ID and Name
+
+ - VPC_NAME: The name of the VPC where the subnets reside
+
+```shell
+ic is subnets --output json | jq -r '.[] | select(.vpc.name=="VPC_NAME") | .name,.id'
+```
+
+
 ## Images
 
 ### Import custom image in to VPC
