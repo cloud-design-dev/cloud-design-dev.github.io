@@ -5,252 +5,257 @@ parent: IBM Code Engine
 nav_order: 1
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Overview](#overview)
+  - [Preparing Accounts](#preparing-accounts)
+    - [Source Account](#source-account)
+    - [Destination Account](#destination-account)
+  - [Create Code Engine Project](#create-code-engine-project)
+    - [(Optional) Create Docker container via Code Engine](#optional-create-docker-container-via-code-engine)
+  - [Deploy Sync Environment](#deploy-sync-environment)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Overview
-In this guide I will show you how to sync ICOS bucket objects between accounts using [Code Engine](https://cloud.ibm.com/docs/codeengine). Code Engine provides a platform to unify the deployment of all of your container-based applications on a Kubernetes-based infrastructure. The Code Engine experience is designed so that you can focus on writing code without the need for you to learn, or even know about, Kubernetes.
-
-> Code Engine is currently an experimental offering and all resources are deleted every 7 days.
-
-## Steps
-* [Preparing Accounts](#preparing-accounts)
-+ [Source Account](#source-account)
-    - [Create Service ID](#create-service-id)
-    - [Create Reader access policy for newly created service id](#create-reader-access-policy-for-newly-created-service-id)
-    - [Generate HMAC credentials tied to our service ID](#generate-hmac-credentials-tied-to-our-service-id)
-+ [Destination Account](#destination-account)
-    - [Create Service ID](#create-service-id-1)
-    - [Create Reader access policy for newly created service id](#create-reader-access-policy-for-newly-created-service-id-1)
-    - [Generate HMAC credentials tied to our service ID](#generate-hmac-credentials-tied-to-our-service-id-1)
-* [Create Code Engine Project via Cloud Shell](#create-code-engine-project-via-cloud-shell)
-* [Create Code Engine Secrets](#create-code-engine-secrets)
-* [Create Code Engine Project Job definition with environmental variables](#create-code-engine-project-job-definition-with-environmental-variables)
-* [Submit Code Engine Job](#submit-code-engine-job)
+In this guide I will show you how to sync [IBM Cloud Object Storage](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-about-cloud-object-storage) buckets between accounts using [Code Engine](https://cloud.ibm.com/docs/codeengine). Code Engine provides a platform to unify the deployment of all of your container-based applications on a Kubernetes-based infrastructure. The Code Engine experience is designed so that you can focus on writing code without the need for you to learn, or even know about, Kubernetes.
 
 ## Preparing Accounts
-We will be using Cloud Shell to generate Service IDs and Object Storage credentials for both the source and destination accounts. 
+We will be using [Cloud Shell](https://cloud.ibm.com/docs/cloud-shell?topic=cloud-shell-shell-ui) to generate Service IDs and Object Storage credentials for both the source and destination accounts. 
+
+We will also be creating a [Service ID](https://cloud.ibm.com/docs/account?topic=account-serviceids) on the both accounts. A service ID identifies a service or application similar to how a user ID identifies a user. We can assign specific access policies to the service ID that restrict permissions for using specific services: in this case it gets *read-only* access to an Object Storage bucket on the Source Account and *write* access an Object Storage bucket on the Destination Account.
 
 ### Source Account 
-We will create a service ID on the source account. A service ID identifies a service or application similar to how a user ID identifies a user. We can assign specific access policies to the service ID that restrict permissions for using specific services: in this case it gets read-only access to an IBM Cloud Object Storage bucket. 
 
-#### Create Service ID
-```shell
-$ ibmcloud iam service-id-create <name-of-your-service-id> --description "Service ID for read-only access to bucket" --output json
+Launch a Cloud Shell session on the Source Account to begin generating our Object Storage access credentials.
+
+**Create Service ID**
+
+```sh
+$ ibmcloud iam service-id-create SERVICE_ID_NAME --description "Service ID for read-only access to bucket"
 ```
 
-![Service ID Creation](https://dsc.cloud/quickshare/source-service-id.png)
+*Inputs:*
+> - `SERVICE_ID_NAME`: The name for the Service ID on the source account. 
 
-#### Create Reader access policy for newly created service id
+**Create Reader access policy for newly created Service ID:**
+
 Now we will limit the scope of this service ID to have read only access to our source Object Storage bucket. 
 
-```shell
-$ ibmcloud iam service-policy-create <Service ID> --roles Reader --service-name cloud-object-storage --service-instance <Service Instance GUID> --resource-type bucket --resource <bucket-name>
+```sh
+$ ibmcloud iam service-policy-create SERVICE_ID --roles Reader --service-name cloud-object-storage \
+--service-instance ICOS_SERVICE_INSTANCE_ID --resource-type bucket --resource SOURCE_BUCKET_NAME
 ```
+    
+*Inputs:*
+> - `SERVICE_ID`: The ID of the Service ID created in the previous step.  
+> - `ICOS_SERVICE_INSTANCE_ID`: The GUID of the Cloud Object Storage instance on the source account. You can retrieve this with the command: `ibmcloud resource service-instance <name of icos instance>`
+> - `SOURCE_BUCKET_NAME`: The name of the source account bucket that we will sync with the destination bucket. 
 
-*Service Instance GUID*  - This is the GUID of the Cloud Object Storage instance. You can retrieve this with the command: `ibmcloud resource service-instance <name of icos instance>`
+**Generate HMAC credentials tied to our service ID:**
 
-![Expected Output Example](https://dsc.cloud/quickshare/create-source-service-policy.png)
-
-#### Generate HMAC credentials tied to our service ID 
 In order for the Minio client to talk to each Object Storage instance it will need HMAC credentials (Access Key and Secret Key in S3 parlance). 
 
-```shell
-$ ibmcloud resource service-key-create source-icos-service-creds Reader --instance-id <Service Instance GUID> --service-id <Service ID> --parameters '{"HMAC":true}'
+```sh
+$ ibmcloud resource service-key-create SERVICE_ID_KEY_NAME Reader --instance-id ICOS_SERVICE_INSTANCE_ID \
+--service-id SERVICE_ID --parameters '{"HMAC":true}'
 ```
-Save the **access_key_id** and **secret_access_key** as we will be using these in our Code Engine project. 
+    
+*Inputs:*
+> - `SERVICE_ID`: The ID of the Service ID created in the previous step. 
+> - `ICOS_SERVICE_INSTANCE_ID`: The GUID of the Cloud Object Storage instance on the source account.
+> - `SERVICE_ID_KEY_NAME`: The name of the Service ID credentials to create.
 
-![Create HMAC Credentials](https://dsc.cloud/quickshare/source-hmac-credentials.png)
+*Important Outputs:*
+Take note of the output from the Serice Key output. These values will be used when creating our Code Engine Job.
 
----------------------------------------------------------------
+> - `access_key_id` will be used as the variable `SOURCE_ACCESS_KEY`
+> - `secret_access_key` will be used as the variable `SOURCE_SECRET_KEY`
+
+---
 
 ### Destination Account
-We will create a service ID on the destination account. A service ID identifies a service or application similar to how a user ID identifies a user. We can assign specific access policies to the service ID that restrict permissions for using specific services: in this case it gets write access to an IBM Cloud Object Storage bucket.  
 
-#### Create Service ID
-```shell
-$ ibmcloud  iam service-id-create <name-of-your-service-id> --description "Service ID for write access to bucket" --output json
+Launch a Cloud Shell session on the Source Account to begin generating our Object Storage access credentials.
+
+**Create Service ID**
+
+```sh
+$ ibmcloud iam service-id-create SERVICE_ID_NAME --description "Service ID for write access to destination account bucket"
 ```
 
-![Expected Output Example](https://dsc.cloud/quickshare/destination-service-id.png)
+*Inputs:*
+> - `SERVICE_ID_NAME`: The name for the Service ID on the source account. 
 
-#### Create Reader access policy for newly created service id
-Now we will limit the scope of this service ID to have read only access to our source Object Storage bucket. 
 
-```shell 
-$ ibmcloud iam service-policy-create <Service ID> --roles Writer --service-name cloud-object-storage --service-instance <Service Instance GUID> --resource-type bucket --resource <bucket-name>
+**Create Reader access policy for newly created service ID: **
+
+Now we will add a Writer policy to our destination bucket bound to the Service ID. 
+
+```sh
+$ ibmcloud iam service-policy-create SERVICE_ID --roles Writer --service-name cloud-object-storage \
+--service-instance ICOS_SERVICE_INSTANCE_ID --resource-type bucket --resource DESTINATION_BUCKET_NAME
 ```
+    
+*Inputs:*
+> - `SERVICE_ID`: The ID of the Service ID created in the previous step.  
+> - `ICOS_SERVICE_INSTANCE_ID`: The GUID of the Cloud Object Storage instance on the source account. You can retrieve this with the command: `ibmcloud resource service-instance <name of icos instance>`
+> - `DESTINATION_BUCKET_NAME`: The name of the source account bucket that we will sync with the destination bucket. 
 
-*Service Instance GUID*  - This is the GUID of the Cloud Object Storage instance. You can retrieve this with the command: `ibmcloud resource service-instance <name of icos instance>`
+**Generate HMAC credentials tied to our service ID:**
 
-#### Generate HMAC credentials tied to our service ID 
 We'll follow the same procedure as last time to generate the HMAC credentials, but this time on the destination account.
 
-```shell
-$ ibmcloud resource service-key-create destination-icos-service-creds Writer --instance-id <Service Instance GUID> --service-id <Service ID> --parameters '{"HMAC":true}'
+```sh
+$ ibmcloud resource service-key-create SERVICE_ID_KEY_NAME Reader --instance-id ICOS_SERVICE_INSTANCE_ID \
+--service-id SERVICE_ID --parameters '{"HMAC":true}'
 ```
-Save the **access_key_id** and **secret_access_key** as we will be using these in with our Code Engine project. 
+    
+*Inputs:*
+> - `SERVICE_ID`: The ID of the Service ID created in the previous step. 
+> - `ICOS_SERVICE_INSTANCE_ID`: The GUID of the Cloud Object Storage instance on the source account.
+> - `SERVICE_ID_KEY_NAME`:
 
-## Create Code Engine Project via Cloud Shell
-In order to create our Code Engine project we need to make sure that our cloud shell session is targeting the correct resource group. You can do this by using the `target -g` option with the IBM Cloud CLI. 
+*Important Outputs:*
+Take note of the output from the Serice Key output. These values will be used when creating our Code Engine Job.
+
+> - `access_key_id` will be used as the variable `DESTINATION_ACCESS_KEY`
+> - `secret_access_key` will be used as the variable `DESTINATION_SECRET_KEY`
+
+---
+
+## Create Code Engine Project
+
+**Target Resource Group:**
+
+On the account where you will deploy and run the Code Engine job to sync the buckets jump back in to Cloud Shell. In order to create our Code Engine project we need to make sure that our cloud shell session is targeting the correct resource group. 
 
 ```shell
-$ ibmcloud target -g <Resource Group>
+$ ibmcloud target -g RESOURCE_GROUP
 ```
+    
+*Inputs:*
+> - `RESOURCE_GROUP`: Name of the Resource Group to assign to Code Engine Project. 
+
+**Create Code Engine Project:**
 With the correct Resource Group set, we can now create our Code Engine project. We add the `--target` flag to ensure that future Code Engine commands are targeting the correct project.
 
 ```
-$ ibmcloud ce project create -n <project_name> --target
+$ ibmcloud ce project create -n PROJECT_NAME --target
+```
+    
+*Inputs:*
+> - `PROJECT_NAME`: Name of the Code Engine Project. 
+
+### (Optional) Create Docker container via Code Engine
+
+The default image used to sync the buckets is `greyhoundforty/mcsync:latest`. If you would like to build the container yourself and stick it in to IBM Cloud Container Registry fork this [repository](https://github.com/cloud-design-dev/code-engine-minio-sync), update the Dockerfile if needed, and then use Code Engine to build the image as outlined below.
+
+**Create Code Engine Repository Secret:**
+
+In order to push our container image in to IBM Cloud Container Registry we need to first set up a Code Engine [registry secret](https://cloud.ibm.com/docs/codeengine?topic=codeengine-add-registry#add-registry-access-ce).
+
+```sh
+  ibmcloud ce registry create --name REGISTRY_SECRET_NAME --username iamapikey \
+  --password IBMCLOUD_API_KEY --email YOUR_IBM_ACCOUNT_EMAIL --server ICR_ENDPOINT 
 ```
 
-![Create Code Engine Project](https://dsc.cloud/quickshare/ce-create-project.png)
+Inputs:
+> - `REGISTRY_SECRET_NAME`: The name of the Code Engine Registry Secret.
+> - `IBMCLOUD_API_KEY`: The IBM Cloud API Key for your account. 
+> - `YOUR_IBM_ACCOUNT_EMAIL`: The email associated with your IBM Account.
+> - `ICR_ENDPOINT`: The IBM Container Registry Endpoint to use. See [full list](https://cloud.ibm.com/docs/Registry?topic=Registry-registry_overview#registry_regions)
 
-## Create Code Engine Secrets
-In order for our minio powered container to sync objects between the accounts it needs access to the Access and Secret keys we created earlier. We will use the `secret create` option to store all of values in a single secret that we can then reference in our job definition.
+**Create Container Build:**
 
- - SOURCE_ACCESS_KEY: Access Key generated on Source account
- - SOURCE_SECRET_KEY: Secret Key generated on Source account
- - SOURCE_REGION: Cloud Object Storage endpoint for the Source bucket
- - SOURCE_BUCKET: Name of bucket on Source account
- - DESTINATION_ACCESS_KEY: Access Key generated on Destination account
- - DESTINATION_SECRET_KEY: Secret Key generated on Destination account
- - DESTINATION_REGION: Cloud Object Storage endpoint for the Destination bucket
- - DESTINATION_BUCKET: Name of bucket on Destination account
+```sh
+  ic ce build create --name BUILD_NAME --image us.icr.io/NAMESPACE/CONTAINER_NAME:1 --source FORKED_REPO_URL \
+  --rs REGISTRY_SECRET_NAME --size small 
+```
+
+Inputs:
+> - `BUILD_NAME`: The name of the build job.
+> - `NAMESPACE`: The IBM Container Registry Namespace where the image will be stored. See [this guide]() if you need to create a namespace.
+> - `CONTAINER_NAME`: The name of the container. 
+> - `FORKED_REPO_URL`: The Github URL for the forked version of the sync container.
+> - `REGISTRY_SECRET_NAME:` The name of the Container Registry Secreate created in the previous step. 
+
+**Run container build:** 
+
+```sh
+ibmcloud ce buildrun submit --build BUILD_NAME
+```
+
+Inputs:
+> - `BUILD_NAME`: The name of the build job created in the previous step.
+
+--- 
+
+## Deploy Sync Environment
+
+**Clone this repository:**
+
+```sh
+git clone https://github.com/cloud-design-dev/code-engine-minio-sync.git
+cd code-engine-minio-sync
+```
+
+**Copy `variables.example` to `.env`:**
 
 ```shell
-$ ibmcloud ce secret create --name ce-sync-secret --from-literal SOURCE_ACCESS_KEY=VALUE --from-literal SOURCE_SECRET_KEY=VALUE --from-literal SOURCE_REGION=VALUE --from-literal SOURCE_BUCKET=VALUE --from-literal DESTINATION_ACCESS_KEY=VALUE --from-literal DESTINATION_SECRET_KEY=VALUE --from-literal DESTINATION_REGION=VALUE --from-literal DESTINATION_BUCKET=VALUE
+  cp variables.example .env 
 ```
 
-![Create Code Engine Secret](https://dsc.cloud/quickshare/ce-create-secret.png)
+**Edit `.env` to match your environment: **
 
-## Create Code Engine Project Job definition with environmental variables
-Now that our project has been created we need to create our Job definition. In Code Engine terms a job is a stand-alone executable for batch jobs. Unlike applications, which react to incoming HTTP requests, jobs are meant to be used for running container images that contain an executable that is designed to run one time and then exit.
+See [inputs](#inputs) for available options.
 
-```shell
-$ ibmcloud ce jobdef create --name JOBDEF_NAME --image IMAGE_REF --env-from-secret SECRET_NAME 
+**Once updated source the file for use in our session:**
+
+```sh
+source .env
 ```
 
-![Create Job Definition](https://dsc.cloud/quickshare/ce-create-jobdef.png)
+**Create Code Engine Secret:**
 
-You can view the definition of the job using the command `ibmcloud ce jobdef get -n <name of job definition>`
-
-```shell
-$ ibmcloud ce jobdef get -n ce-mc-sync-jobdef
-Project 'ce-minio-sync' and all its contents will be automatically deleted 7 days from now.
-Getting job definition 'ce-mc-sync-jobdef'...
-Name:        ce-mc-sync-jobdef  
-Project ID:  1d7514d2-ce89  
-Metadata:    
-  Creation Timestamp:  2020-08-17 14:51:00 +0000 UTC  
-  Generation:          1  
-  Resource Version:    223595401  
-  Self Link:           /apis/codeengine.cloud.ibm.com/v1alpha1/namespaces/1d7514d2-ce89/jobdefinitions/ce-mc-sync-jobdef  
-  UID:                 0fb11f71-a912-44f9-88e3-1d1612f8e8ab  
-Spec:        
-  Containers:  
-    Image:  greyhoundforty/icos-ce-sync:1  
-    Name:   ce-mc-sync-jobdef  
-    Commands:  
-    Arguments:  
-    Env:    
-      Name:  SOURCE_BUCKET  
-      Value From Secret Key Ref:  
-        Key:   SOURCE_BUCKET  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  SOURCE_REGION  
-      Value From Secret Key Ref:  
-        Key:   SOURCE_REGION  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  SOURCE_SECRET_KEY  
-      Value From Secret Key Ref:  
-        Key:   SOURCE_SECRET_KEY  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  DESTINATION_ACCESS_KEY  
-      Value From Secret Key Ref:  
-        Key:   DESTINATION_ACCESS_KEY  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  DESTINATION_BUCKET  
-      Value From Secret Key Ref:  
-        Key:   DESTINATION_BUCKET  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  DESTINATION_REGION  
-      Value From Secret Key Ref:  
-        Key:   DESTINATION_REGION  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  DESTINATION_SECRET_KEY  
-      Value From Secret Key Ref:  
-        Key:   DESTINATION_SECRET_KEY  
-        Name:  ce-sync-secret  
-    Env:    
-      Name:  SOURCE_ACCESS_KEY  
-      Value From Secret Key Ref:  
-        Key:   SOURCE_ACCESS_KEY  
-        Name:  ce-sync-secret  
-    Resource Requests:  
-      Cpu:     1  
-      Memory:  128Mi  
-OK
+```
+ibmcloud ce secret create --name CODE_ENGINE_SECRET --from-literal SOURCE_ACCESS_KEY="${SOURCE_ACCESS_KEY}" \
+--from-literal SOURCE_SECRET_KEY="${SOURCE_SECRET_KEY}" --from-literal SOURCE_REGION="${SOURCE_REGION}" \
+--from-literal SOURCE_BUCKET="${SOURCE_BUCKET}" --from-literal DESTINATION_REGION="${DESTINATION_REGION}" \
+--from-literal DESTINATION_ACCESS_KEY="${DESTINATION_ACCESS_KEY}" --from-literal DESTINATION_SECRET_KEY="${DESTINATION_SECRET_KEY}" \
+--from-literal DESTINATION_BUCKET="${DESTINATION_BUCKET}"
 ```
 
-## Submit Code Engine Job
-It is now time to submit our Job to Code Engine. The maximum time a job can run is 10 hours, but in most cases ICOS syncing takes significantly less time to complete. 
+*Inputs:*
+> - `CODE_ENGINE_SECRET`: Name of the Code Engine Secret. All other variables are picked up from our `.env` file. 
 
-```shell
-$ ibmcloud ce job run --name <name of job> --jobdef <name of job definition>
+**Create Code Engine Job:**
+
+If you created your own version of the container image as outlined above you will need to update the command and replace `greyhoundforty/mcsync:latest` with your image.
+
+```sh
+ibmcloud ce job create --name JOB_NAME --image greyhoundforty/mcsync:latest --env-from-secret CODE_ENGINE_SECRET
 ```
 
-In my testing I am only syncing a few times so by the time I check the Kubernetes pods, the job has already completed. Looking at the logs I am able to verify that the contents have been synced between the Object Storage buckets.
+*Inputs:*
+> - `JOB_NAME`: The name of the Code Engine job.
+> - `CODE_ENGINE_SECRET`: Name of the Code Engine Secret. All other variables are picked up from our `.env` file. 
 
-```shell
-ryan@cloudshell:~$ ibmcloud ce job run --name  ce-mc-sync-jobv1 --jobdef ce-mc-sync-jobdef
-Project 'ce-minio-sync' and all its contents will be automatically deleted 7 days from now.
-Creating job 'ce-mc-sync-jobv1'...
-OK
+**Submit Code Engine Job:**
 
-ryan@cloudshell:~$ ibmcloud ce project target -n ce-minio-sync --kubecfg
-Targeting project 'ce-minio-sync'...
-Added context for 'ce-minio-sync' to the current kubeconfig file.
-OK
-Now targeting environment 'ce-minio-sync'.
-
-ryan@cloudshell:~$ kubectl get pods 
-NAME                   READY   STATUS      RESTARTS   AGE
-ce-mc-sync-jobv1-0-0   0/1     Completed   0          53s
-
-ryan@cloudshell:~$ ibmcloud ce job list
-Project 'ce-minio-sync' and all its contents will be automatically deleted 7 days from now.
-Listing jobs...
-Name               Age   
-ce-mc-sync-jobv1   2m13s   
-OK
-Command 'job list' performed successfully
-
-ryan@cloudshell:~$ ibmcloud ce job logs -n ce-mc-sync-jobv1
-Project 'ce-minio-sync' and all its contents will be automatically deleted 7 days from now.
-Logging job 'ce-mc-sync-jobv1' on pod '0'...
-Added `source_acct` successfully.
-Added `destination_acct` successfully.
-`source_acct/wandering-thunder-68-source/as-policy.png` -> `destination_acct/sparkling-sky-47-destination/as-policy.png`
-`source_acct/wandering-thunder-68-source/create-source-service-policy.png` -> `destination_acct/sparkling-sky-47-destination/create-source-service-policy.png`
-`source_acct/wandering-thunder-68-source/add-backup-repository.png` -> `destination_acct/sparkling-sky-47-destination/add-backup-repository.png`
-`source_acct/wandering-thunder-68-source/direct-link-standard.png` -> `destination_acct/sparkling-sky-47-destination/direct-link-standard.png`
-`source_acct/wandering-thunder-68-source/create-workspace.png` -> `destination_acct/sparkling-sky-47-destination/create-workspace.png`
-`source_acct/wandering-thunder-68-source/direct-link-byoip.png` -> `destination_acct/sparkling-sky-47-destination/direct-link-byoip.png`
-`source_acct/wandering-thunder-68-source/add-scale-out.png` -> `destination_acct/sparkling-sky-47-destination/add-scale-out.png`
-`source_acct/wandering-thunder-68-source/filter-vpc.png` -> `destination_acct/sparkling-sky-47-destination/filter-vpc.png`
-`source_acct/wandering-thunder-68-source/k8s-storage.png` -> `destination_acct/sparkling-sky-47-destination/k8s-storage.png`
-`source_acct/wandering-thunder-68-source/Picture1.png` -> `destination_acct/sparkling-sky-47-destination/Picture1.png`
-`source_acct/wandering-thunder-68-source/iks-storage-Page-1.png` -> `destination_acct/sparkling-sky-47-destination/iks-storage-Page-1.png`
-`source_acct/wandering-thunder-68-source/dl-copy.png` -> `destination_acct/sparkling-sky-47-destination/dl-copy.png`
-`source_acct/wandering-thunder-68-source/rt-us-east.gv.png` -> `destination_acct/sparkling-sky-47-destination/rt-us-east.gv.png`
-`source_acct/wandering-thunder-68-source/ns-secrets-cm.png` -> `destination_acct/sparkling-sky-47-destination/ns-secrets-cm.png`
-Total: 0 B, Transferred: 2.30 MiB, Speed: 1.66 MiB/s
-
-OK
-Command 'job logs' performed successfully
+```sh
+ibmcloud ce jobrun submit --job JOB_NAME
 ```
 
-If you need to sync contents from the source bucket to the destination bucket again, simply run another job (with a new name) and Code Engine will take care of it for you. 
+*Inputs:*
+> - `JOB_NAME`: The name of the Code Engine job.
+
+**Check the status of the job:**
+
+Depending on the size and number of objects that you are syncing the job could take a bit of time. You can check on the status of the job run by issuing the command:
+
+```sh
+ibmcloud ce jobrun get --name JOB_NAME
+```
+
