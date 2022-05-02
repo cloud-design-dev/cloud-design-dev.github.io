@@ -1,0 +1,1678 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.13">
+    
+    
+      
+        <title>Cross account Object Storage bucket sync with Code Engine - IBM Cloud Guides and Examples</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e411adfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="IBM Cloud Guides and Examples" class="md-header__button md-logo" aria-label="IBM Cloud Guides and Examples" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            IBM Cloud Guides and Examples
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cross account Object Storage bucket sync with Code Engine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="IBM Cloud Guides and Examples" class="md-nav__button md-logo" aria-label="IBM Cloud Guides and Examples" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    IBM Cloud Guides and Examples
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Code engine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code engine" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Code engine
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../container-image-build-ce/" class="md-nav__link">
+        Build a container image from source control using Code Engine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Cross account Object Storage bucket sync with Code Engine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Cross account Object Storage bucket sync with Code Engine
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-accounts" class="md-nav__link">
+    Preparing Accounts
+  </a>
+  
+    <nav class="md-nav" aria-label="Preparing Accounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-account" class="md-nav__link">
+    Source Account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#destination-account" class="md-nav__link">
+    Destination Account
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-code-engine-project" class="md-nav__link">
+    Create Code Engine Project
+  </a>
+  
+    <nav class="md-nav" aria-label="Create Code Engine Project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optional-create-docker-container-via-code-engine" class="md-nav__link">
+    (Optional) Create Docker container via Code Engine
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-sync-environment" class="md-nav__link">
+    Deploy Sync Environment
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" data-md-state="indeterminate" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Diagrams
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Diagrams" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Diagrams
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/" class="md-nav__link">
+        IBM Cloud Diagrams
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/basic-dl/" class="md-nav__link">
+        Basic Classic Direct Link Diagram
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/basic-vpc/" class="md-nav__link">
+        Basic VPC Diagram
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Ibm api
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm api" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm api
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/" class="md-nav__link">
+        IBM Cloud Rest API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/private-dns/" class="md-nav__link">
+        Private DNS API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/search-rest-api-examples/" class="md-nav__link">
+        Search API Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/vpc-api-examples/" class="md-nav__link">
+        Virtual Private Cloud API
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" data-md-state="indeterminate" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Ibm cli
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm cli" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm cli
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/" class="md-nav__link">
+        IBM Cloud CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/icos/" class="md-nav__link">
+        Using the Object Storage CLI Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/resource-search/" class="md-nav__link">
+        Searching with the IBM Cloud CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/vpc/" class="md-nav__link">
+        Using the VPC CLI Plugin
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" data-md-state="indeterminate" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Ibm cos
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm cos" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm cos
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cos/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cos/veeam-scale-out/" class="md-nav__link">
+        Scale Out Repository with Veeam and IBM COS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" data-md-state="indeterminate" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Ibm direct link
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm direct link" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm direct link
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-direct-link/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-direct-link/classic-direct-link/" class="md-nav__link">
+        IBM Cloud Classic Direct Link Overview
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" data-md-state="indeterminate" type="checkbox" id="__nav_8" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Ibm guides tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm guides tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm guides tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-guides-tutorials/" class="md-nav__link">
+        IBM Cloud Tutorials, Tools, and Guides
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" data-md-state="indeterminate" type="checkbox" id="__nav_9" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Ibm vpc
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm vpc" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm vpc
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-vpc/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-vpc/vpc-vpnaas/" class="md-nav__link">
+        Site to Site IPsec Tunnel to IBM Cloud VPC VPNaaS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" data-md-state="indeterminate" type="checkbox" id="__nav_10" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/icos-sync-iks/" class="md-nav__link">
+        Cross account Object Storage bucket sync with free IKS Cluster
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/overview/" class="md-nav__link">
+        Kubernetes 101 Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubernetes/qs-storage/" class="md-nav__link">
+        Using QuantaStor as a Persistent Volume Provider for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" data-md-state="indeterminate" type="checkbox" id="__nav_11" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          Python examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python examples" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          Python examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/" class="md-nav__link">
+        IBM Cloud Python Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" data-md-state="indeterminate" type="checkbox" id="__nav_11_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Containers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Containers" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Containers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/" class="md-nav__link">
+        Containers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/container-registry/" class="md-nav__link">
+        Container Registry Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/va/" class="md-nav__link">
+        Vulnerability Advisor Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" data-md-state="indeterminate" type="checkbox" id="__nav_11_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IAM
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IAM" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IAM
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/IAM/" class="md-nav__link">
+        Configuring Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/IAM/access-groups/" class="md-nav__link">
+        Access Group Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" data-md-state="indeterminate" type="checkbox" id="__nav_11_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Interconnectivity
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Interconnectivity" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Interconnectivity
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Interconnectivity/" class="md-nav__link">
+        Interconnectivity Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" data-md-state="indeterminate" type="checkbox" id="__nav_11_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          VPC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VPC" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          VPC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/VPC/" class="md-nav__link">
+        Configuring Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/VPC/create-single-zone-vpc/" class="md-nav__link">
+        Single Zone VPC
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_12" data-md-state="indeterminate" type="checkbox" id="__nav_12" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_12">
+          Terraform
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Terraform" data-md-level="1">
+        <label class="md-nav__title" for="__nav_12">
+          <span class="md-nav__icon md-icon"></span>
+          Terraform
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/ibm-gitlab/" class="md-nav__link">
+        Deploying IBM Cloud infrastructure using Terraform and Gitlab
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/vpc-consul/" class="md-nav__link">
+        Consul cluster in IBM Cloud VPC using Terraform and Ansible
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/vpc-wireguard/" class="md-nav__link">
+        Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#preparing-accounts">Preparing Accounts</a><ul>
+<li><a href="#source-account">Source Account</a></li>
+<li><a href="#destination-account">Destination Account</a></li>
+</ul>
+</li>
+<li><a href="#create-code-engine-project">Create Code Engine Project</a><ul>
+<li><a href="#optional-create-docker-container-via-code-engine">(Optional) Create Docker container via Code Engine</a></li>
+</ul>
+</li>
+<li><a href="#deploy-sync-environment">Deploy Sync Environment</a></li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="overview">Overview</h1>
+<p>In this guide I will show you how to sync <a href="https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-about-cloud-object-storage">IBM Cloud Object Storage</a> buckets between accounts using <a href="https://cloud.ibm.com/docs/codeengine">Code Engine</a>. Code Engine provides a platform to unify the deployment of all of your container-based applications on a Kubernetes-based infrastructure. The Code Engine experience is designed so that you can focus on writing code without the need for you to learn, or even know about, Kubernetes.</p>
+<h2 id="preparing-accounts">Preparing Accounts</h2>
+<p>We will be using <a href="https://cloud.ibm.com/docs/cloud-shell?topic=cloud-shell-shell-ui">Cloud Shell</a> to generate Service IDs and Object Storage credentials for both the source and destination accounts. </p>
+<p>We will also be creating a <a href="https://cloud.ibm.com/docs/account?topic=account-serviceids">Service ID</a> on the both accounts. A service ID identifies a service or application similar to how a user ID identifies a user. We can assign specific access policies to the service ID that restrict permissions for using specific services: in this case it gets <em>read-only</em> access to an Object Storage bucket on the Source Account and <em>write</em> access an Object Storage bucket on the Destination Account.</p>
+<h3 id="source-account">Source Account</h3>
+<p>Launch a Cloud Shell session on the Source Account to begin generating our Object Storage access credentials.</p>
+<p><strong>Create Service ID</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$ ibmcloud iam service-id-create SERVICE_ID_NAME --description <span class="s2">&quot;Service ID for read-only access to bucket&quot;</span>
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID_NAME</code>: The name for the Service ID on the source account. </li>
+</ul>
+</blockquote>
+<p><strong>Create Reader access policy for newly created Service ID:</strong></p>
+<p>Now we will limit the scope of this service ID to have read only access to our source Object Storage bucket. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$ ibmcloud iam service-policy-create SERVICE_ID --roles Reader --service-name cloud-object-storage <span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>--service-instance ICOS_SERVICE_INSTANCE_ID --resource-type bucket --resource SOURCE_BUCKET_NAME
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID</code>: The ID of the Service ID created in the previous step.  </li>
+<li><code>ICOS_SERVICE_INSTANCE_ID</code>: The GUID of the Cloud Object Storage instance on the source account. You can retrieve this with the command: <code>ibmcloud resource service-instance &lt;name of icos instance&gt;</code></li>
+<li><code>SOURCE_BUCKET_NAME</code>: The name of the source account bucket that we will sync with the destination bucket. </li>
+</ul>
+</blockquote>
+<p><strong>Generate HMAC credentials tied to our service ID:</strong></p>
+<p>In order for the Minio client to talk to each Object Storage instance it will need HMAC credentials (Access Key and Secret Key in S3 parlance). </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ ibmcloud resource service-key-create SERVICE_ID_KEY_NAME Reader --instance-id ICOS_SERVICE_INSTANCE_ID <span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>--service-id SERVICE_ID --parameters <span class="s1">&#39;{&quot;HMAC&quot;:true}&#39;</span>
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID</code>: The ID of the Service ID created in the previous step. </li>
+<li><code>ICOS_SERVICE_INSTANCE_ID</code>: The GUID of the Cloud Object Storage instance on the source account.</li>
+<li><code>SERVICE_ID_KEY_NAME</code>: The name of the Service ID credentials to create.</li>
+</ul>
+</blockquote>
+<p><em>Important Outputs:</em>
+Take note of the output from the Serice Key output. These values will be used when creating our Code Engine Job.</p>
+<blockquote>
+<ul>
+<li><code>access_key_id</code> will be used as the variable <code>SOURCE_ACCESS_KEY</code></li>
+<li><code>secret_access_key</code> will be used as the variable <code>SOURCE_SECRET_KEY</code></li>
+</ul>
+</blockquote>
+<hr />
+<h3 id="destination-account">Destination Account</h3>
+<p>Launch a Cloud Shell session on the Source Account to begin generating our Object Storage access credentials.</p>
+<p><strong>Create Service ID</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ ibmcloud iam service-id-create SERVICE_ID_NAME --description <span class="s2">&quot;Service ID for write access to destination account bucket&quot;</span>
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID_NAME</code>: The name for the Service ID on the source account. </li>
+</ul>
+</blockquote>
+<p><strong>Create Reader access policy for newly created service ID: </strong></p>
+<p>Now we will add a Writer policy to our destination bucket bound to the Service ID. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ ibmcloud iam service-policy-create SERVICE_ID --roles Writer --service-name cloud-object-storage <span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>--service-instance ICOS_SERVICE_INSTANCE_ID --resource-type bucket --resource DESTINATION_BUCKET_NAME
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID</code>: The ID of the Service ID created in the previous step.  </li>
+<li><code>ICOS_SERVICE_INSTANCE_ID</code>: The GUID of the Cloud Object Storage instance on the source account. You can retrieve this with the command: <code>ibmcloud resource service-instance &lt;name of icos instance&gt;</code></li>
+<li><code>DESTINATION_BUCKET_NAME</code>: The name of the source account bucket that we will sync with the destination bucket. </li>
+</ul>
+</blockquote>
+<p><strong>Generate HMAC credentials tied to our service ID:</strong></p>
+<p>We'll follow the same procedure as last time to generate the HMAC credentials, but this time on the destination account.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$ ibmcloud resource service-key-create SERVICE_ID_KEY_NAME Reader --instance-id ICOS_SERVICE_INSTANCE_ID <span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>--service-id SERVICE_ID --parameters <span class="s1">&#39;{&quot;HMAC&quot;:true}&#39;</span>
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>SERVICE_ID</code>: The ID of the Service ID created in the previous step. </li>
+<li><code>ICOS_SERVICE_INSTANCE_ID</code>: The GUID of the Cloud Object Storage instance on the source account.</li>
+<li><code>SERVICE_ID_KEY_NAME</code>:</li>
+</ul>
+</blockquote>
+<p><em>Important Outputs:</em>
+Take note of the output from the Serice Key output. These values will be used when creating our Code Engine Job.</p>
+<blockquote>
+<ul>
+<li><code>access_key_id</code> will be used as the variable <code>DESTINATION_ACCESS_KEY</code></li>
+<li><code>secret_access_key</code> will be used as the variable <code>DESTINATION_SECRET_KEY</code></li>
+</ul>
+</blockquote>
+<hr />
+<h2 id="create-code-engine-project">Create Code Engine Project</h2>
+<p><strong>Target Resource Group:</strong></p>
+<p>On the account where you will deploy and run the Code Engine job to sync the buckets jump back in to Cloud Shell. In order to create our Code Engine project we need to make sure that our cloud shell session is targeting the correct resource group. </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$ ibmcloud target -g RESOURCE_GROUP
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>RESOURCE_GROUP</code>: Name of the Resource Group to assign to Code Engine Project. </li>
+</ul>
+</blockquote>
+<p><strong>Create Code Engine Project:</strong>
+With the correct Resource Group set, we can now create our Code Engine project. We add the <code>--target</code> flag to ensure that future Code Engine commands are targeting the correct project.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$ ibmcloud ce project create -n PROJECT_NAME --target
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>PROJECT_NAME</code>: Name of the Code Engine Project. </li>
+</ul>
+</blockquote>
+<h3 id="optional-create-docker-container-via-code-engine">(Optional) Create Docker container via Code Engine</h3>
+<p>The default image used to sync the buckets is <code>greyhoundforty/mcsync:latest</code>. If you would like to build the container yourself and stick it in to IBM Cloud Container Registry fork this <a href="https://github.com/cloud-design-dev/code-engine-minio-sync">repository</a>, update the Dockerfile if needed, and then use Code Engine to build the image as outlined below.</p>
+<p><strong>Create Code Engine Repository Secret:</strong></p>
+<p>In order to push our container image in to IBM Cloud Container Registry we need to first set up a Code Engine <a href="https://cloud.ibm.com/docs/codeengine?topic=codeengine-add-registry#add-registry-access-ce">registry secret</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>  ibmcloud ce registry create --name REGISTRY_SECRET_NAME --username iamapikey <span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  --password IBMCLOUD_API_KEY --email YOUR_IBM_ACCOUNT_EMAIL --server ICR_ENDPOINT 
+</code></pre></div>
+<p>Inputs:</p>
+<blockquote>
+<ul>
+<li><code>REGISTRY_SECRET_NAME</code>: The name of the Code Engine Registry Secret.</li>
+<li><code>IBMCLOUD_API_KEY</code>: The IBM Cloud API Key for your account. </li>
+<li><code>YOUR_IBM_ACCOUNT_EMAIL</code>: The email associated with your IBM Account.</li>
+<li><code>ICR_ENDPOINT</code>: The IBM Container Registry Endpoint to use. See <a href="https://cloud.ibm.com/docs/Registry?topic=Registry-registry_overview#registry_regions">full list</a></li>
+</ul>
+</blockquote>
+<p><strong>Create Container Build:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>  ic ce build create --name BUILD_NAME --image us.icr.io/NAMESPACE/CONTAINER_NAME:1 --source FORKED_REPO_URL <span class="se">\</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  --rs REGISTRY_SECRET_NAME --size small 
+</code></pre></div>
+<p>Inputs:</p>
+<blockquote>
+<ul>
+<li><code>BUILD_NAME</code>: The name of the build job.</li>
+<li><code>NAMESPACE</code>: The IBM Container Registry Namespace where the image will be stored. See <a href="">this guide</a> if you need to create a namespace.</li>
+<li><code>CONTAINER_NAME</code>: The name of the container. </li>
+<li><code>FORKED_REPO_URL</code>: The Github URL for the forked version of the sync container.</li>
+<li><code>REGISTRY_SECRET_NAME:</code> The name of the Container Registry Secreate created in the previous step. </li>
+</ul>
+</blockquote>
+<p><strong>Run container build:</strong> </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ibmcloud ce buildrun submit --build BUILD_NAME
+</code></pre></div>
+<p>Inputs:</p>
+<blockquote>
+<ul>
+<li><code>BUILD_NAME</code>: The name of the build job created in the previous step.</li>
+</ul>
+</blockquote>
+<hr />
+<h2 id="deploy-sync-environment">Deploy Sync Environment</h2>
+<p><strong>Clone this repository:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>git clone https://github.com/cloud-design-dev/code-engine-minio-sync.git
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nb">cd</span> code-engine-minio-sync
+</code></pre></div>
+<p><strong>Copy <code>variables.example</code> to <code>.env</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>  cp variables.example .env 
+</code></pre></div>
+<p><strong>Edit <code>.env</code> to match your environment: </strong></p>
+<p>See <a href="#inputs">inputs</a> for available options.</p>
+<p><strong>Once updated source the file for use in our session:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">source</span> .env
+</code></pre></div>
+<p><strong>Create Code Engine Secret:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>ibmcloud ce secret create --name CODE_ENGINE_SECRET --from-literal SOURCE_ACCESS_KEY=&quot;${SOURCE_ACCESS_KEY}&quot; \
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>--from-literal SOURCE_SECRET_KEY=&quot;${SOURCE_SECRET_KEY}&quot; --from-literal SOURCE_REGION=&quot;${SOURCE_REGION}&quot; \
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>--from-literal SOURCE_BUCKET=&quot;${SOURCE_BUCKET}&quot; --from-literal DESTINATION_REGION=&quot;${DESTINATION_REGION}&quot; \
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>--from-literal DESTINATION_ACCESS_KEY=&quot;${DESTINATION_ACCESS_KEY}&quot; --from-literal DESTINATION_SECRET_KEY=&quot;${DESTINATION_SECRET_KEY}&quot; \
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>--from-literal DESTINATION_BUCKET=&quot;${DESTINATION_BUCKET}&quot;
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>CODE_ENGINE_SECRET</code>: Name of the Code Engine Secret. All other variables are picked up from our <code>.env</code> file. </li>
+</ul>
+</blockquote>
+<p><strong>Create Code Engine Job:</strong></p>
+<p>If you created your own version of the container image as outlined above you will need to update the command and replace <code>greyhoundforty/mcsync:latest</code> with your image.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>ibmcloud ce job create --name JOB_NAME --image greyhoundforty/mcsync:latest --env-from-secret CODE_ENGINE_SECRET
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>JOB_NAME</code>: The name of the Code Engine job.</li>
+<li><code>CODE_ENGINE_SECRET</code>: Name of the Code Engine Secret. All other variables are picked up from our <code>.env</code> file. </li>
+</ul>
+</blockquote>
+<p><strong>Submit Code Engine Job:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>ibmcloud ce jobrun submit --job JOB_NAME
+</code></pre></div>
+<p><em>Inputs:</em></p>
+<blockquote>
+<ul>
+<li><code>JOB_NAME</code>: The name of the Code Engine job.</li>
+</ul>
+</blockquote>
+<p><strong>Check the status of the job:</strong></p>
+<p>Depending on the size and number of objects that you are syncing the job could take a bit of time. You can check on the status of the job run by issuing the command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>ibmcloud ce jobrun get --name JOB_NAME
+</code></pre></div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../container-image-build-ce/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Build a container image from source control using Code Engine" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Build a container image from source control using Code Engine
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../diagrams/" class="md-footer__link md-footer__link--next" aria-label="Next: IBM Cloud Diagrams" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              IBM Cloud Diagrams
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ed9748b7.min.js"></script>
+      
+    
+  </body>
+</html>

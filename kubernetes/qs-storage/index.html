@@ -1,0 +1,1689 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.13">
+    
+    
+      
+        <title>Using QuantaStor as a Persistent Volume Provider for Kubernetes - IBM Cloud Guides and Examples</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e411adfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cc9b2e1e.min.css">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#overview" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="IBM Cloud Guides and Examples" class="md-header__button md-logo" aria-label="IBM Cloud Guides and Examples" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            IBM Cloud Guides and Examples
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Using QuantaStor as a Persistent Volume Provider for Kubernetes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="IBM Cloud Guides and Examples" class="md-nav__button md-logo" aria-label="IBM Cloud Guides and Examples" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    IBM Cloud Guides and Examples
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" data-md-state="indeterminate" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Code engine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code engine" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Code engine
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-engine/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-engine/container-image-build-ce/" class="md-nav__link">
+        Build a container image from source control using Code Engine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../code-engine/cross-account-sync-ce/" class="md-nav__link">
+        Cross account Object Storage bucket sync with Code Engine
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" data-md-state="indeterminate" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Diagrams
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Diagrams" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Diagrams
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/" class="md-nav__link">
+        IBM Cloud Diagrams
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/basic-dl/" class="md-nav__link">
+        Basic Classic Direct Link Diagram
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../diagrams/basic-vpc/" class="md-nav__link">
+        Basic VPC Diagram
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" data-md-state="indeterminate" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Ibm api
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm api" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm api
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/" class="md-nav__link">
+        IBM Cloud Rest API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/private-dns/" class="md-nav__link">
+        Private DNS API
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/search-rest-api-examples/" class="md-nav__link">
+        Search API Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-api/vpc-api-examples/" class="md-nav__link">
+        Virtual Private Cloud API
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" data-md-state="indeterminate" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Ibm cli
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm cli" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm cli
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/" class="md-nav__link">
+        IBM Cloud CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/icos/" class="md-nav__link">
+        Using the Object Storage CLI Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/resource-search/" class="md-nav__link">
+        Searching with the IBM Cloud CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cli/vpc/" class="md-nav__link">
+        Using the VPC CLI Plugin
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" data-md-state="indeterminate" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Ibm cos
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm cos" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm cos
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cos/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-cos/veeam-scale-out/" class="md-nav__link">
+        Scale Out Repository with Veeam and IBM COS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" data-md-state="indeterminate" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Ibm direct link
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm direct link" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm direct link
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-direct-link/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-direct-link/classic-direct-link/" class="md-nav__link">
+        IBM Cloud Classic Direct Link Overview
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" data-md-state="indeterminate" type="checkbox" id="__nav_8" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Ibm guides tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm guides tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm guides tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-guides-tutorials/" class="md-nav__link">
+        IBM Cloud Tutorials, Tools, and Guides
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" data-md-state="indeterminate" type="checkbox" id="__nav_9" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Ibm vpc
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Ibm vpc" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Ibm vpc
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-vpc/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ibm-vpc/vpc-vpnaas/" class="md-nav__link">
+        Site to Site IPsec Tunnel to IBM Cloud VPC VPNaaS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../icos-sync-iks/" class="md-nav__link">
+        Cross account Object Storage bucket sync with free IKS Cluster
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        Kubernetes 101 Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Using QuantaStor as a Persistent Volume Provider for Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Using QuantaStor as a Persistent Volume Provider for Kubernetes
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ibm-cloud-kubernetes-service-iks" class="md-nav__link">
+    IBM Cloud Kubernetes Service (IKS)
+  </a>
+  
+    <nav class="md-nav" aria-label="IBM Cloud Kubernetes Service (IKS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-zone-clusters" class="md-nav__link">
+    Single Zone Clusters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multizone-clusters" class="md-nav__link">
+    Multizone Clusters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quantastor" class="md-nav__link">
+    QuantaStor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps" class="md-nav__link">
+    Steps
+  </a>
+  
+    <nav class="md-nav" aria-label="Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-the-slcli-to-get-the-iks-worker-node-ip-ranges" class="md-nav__link">
+    Use the slcli to get the IKS Worker Node IP Ranges
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-storage-pool-in-quantastor" class="md-nav__link">
+    Create Storage Pool in QuantaStor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-quantastor-network-share" class="md-nav__link">
+    Create QuantaStor Network Share
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-nfs-access-from-iks-worker-node-ips" class="md-nav__link">
+    Enable NFS access from IKS Worker node IPs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-nfs-provisioner-helm-chart" class="md-nav__link">
+    Deploy NFS provisioner Helm chart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-example-pod-and-write-to-mounted-persistent-volume" class="md-nav__link">
+    Deploy example pod and write to mounted persistent volume
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" data-md-state="indeterminate" type="checkbox" id="__nav_11" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          Python examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python examples" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          Python examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/" class="md-nav__link">
+        IBM Cloud Python Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" data-md-state="indeterminate" type="checkbox" id="__nav_11_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Containers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Containers" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Containers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/" class="md-nav__link">
+        Containers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/container-registry/" class="md-nav__link">
+        Container Registry Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Containers/va/" class="md-nav__link">
+        Vulnerability Advisor Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" data-md-state="indeterminate" type="checkbox" id="__nav_11_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IAM
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IAM" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IAM
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/IAM/" class="md-nav__link">
+        Configuring Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/IAM/access-groups/" class="md-nav__link">
+        Access Group Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" data-md-state="indeterminate" type="checkbox" id="__nav_11_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Interconnectivity
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Interconnectivity" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Interconnectivity
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/Interconnectivity/" class="md-nav__link">
+        Interconnectivity Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" data-md-state="indeterminate" type="checkbox" id="__nav_11_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          VPC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="VPC" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          VPC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/VPC/" class="md-nav__link">
+        Configuring Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python-examples/VPC/create-single-zone-vpc/" class="md-nav__link">
+        Single Zone VPC
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_12" data-md-state="indeterminate" type="checkbox" id="__nav_12" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_12">
+          Terraform
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Terraform" data-md-level="1">
+        <label class="md-nav__title" for="__nav_12">
+          <span class="md-nav__icon md-icon"></span>
+          Terraform
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/" class="md-nav__link">
+        Index
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/ibm-gitlab/" class="md-nav__link">
+        Deploying IBM Cloud infrastructure using Terraform and Gitlab
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/vpc-consul/" class="md-nav__link">
+        Consul cluster in IBM Cloud VPC using Terraform and Ansible
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terraform/vpc-wireguard/" class="md-nav__link">
+        Deploy a Wireguard VPN Server in IBM Cloud VPC using Terraform
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#ibm-cloud-kubernetes-service-iks">IBM Cloud Kubernetes Service (IKS)</a><ul>
+<li><a href="#single-zone-clusters">Single Zone Clusters</a></li>
+<li><a href="#multizone-clusters">Multizone Clusters</a></li>
+</ul>
+</li>
+<li><a href="#quantastor">QuantaStor</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#steps">Steps</a><ul>
+<li><a href="#use-the-slcli-to-get-the-iks-worker-node-ips">Use the slcli to get the IKS Worker Node IPs</a></li>
+<li><a href="#create-storage-pool-in-quantastor">Create Storage Pool in QuantaStor</a></li>
+<li><a href="#create-quantastor-network-share">Create QuantaStor Network Share</a></li>
+<li><a href="#enable-nfs-access-from-iks-worker-node-ips">Enable NFS access from IKS Worker node IPs</a></li>
+<li><a href="#deploy-nfs-provisioner-helm-chart">Deploy NFS provisioner Helm chart</a></li>
+<li><a href="#deploy-example-pod-and-write-to-mounted-persistent-volume">Deploy example pod and write to mounted persistent volume</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="overview">Overview</h1>
+<p>In this guide I will be showing you how to use QuantaStor as a persistent volume provider for Kubernetes on IBM Cloud.</p>
+<h2 id="ibm-cloud-kubernetes-service-iks">IBM Cloud Kubernetes Service (IKS)</h2>
+<p>The IBM Cloud Kubernetes service (IKS) has several options for persistent storage but they can vary greatly depending on the type of cluster that you've provisioned. Within IBM Cloud you can deploy Kubernetes <a href="https://cloud.ibm.com/docs/containers?topic=containers-ha_clusters#single_zone">Singlezone</a> clusters or <a href="https://cloud.ibm.com/docs/containers?topic=containers-ha_clusters#multizone">Multizone</a> clusters.</p>
+<h3 id="single-zone-clusters">Single Zone Clusters</h3>
+<p>For single zone clusters (a cluster whose worker nodes all reside in the same Datacenter) the following options are supported out of the box:
+ - <a href="https://cloud.ibm.com/docs/containers?topic=containers-file_storage">IBM Cloud File Storage</a>
+ - <a href="https://cloud.ibm.com/docs/containers?topic=containers-block_storage">IBM Cloud Block Storage</a> 
+ - <a href="https://cloud.ibm.com/docs/containers?topic=containers-object_storage">IBM Cloud Object Storage</a></p>
+<h3 id="multizone-clusters">Multizone Clusters</h3>
+<p>For multizone clusters (a cluster whose worker nodes span multiple Datacenters in the same region) your options are a little more limited. Both the IBM Cloud File and Block offerings are restricted to the Datacenters in which they are ordered. So if you have a File volume provisioned in Dallas 13, your servers and IKS worker nodes in say Dallas 10 cannot actually interact with that storage. For Multizone clusters the following options are supported out of the box:</p>
+<ul>
+<li><a href="https://cloud.ibm.com/docs/containers?topic=containers-object_storage">IBM Cloud Object Storage</a>    </li>
+<li><a href="https://cloud.ibm.com/docs/containers?topic=containers-portworx">Portworx</a></li>
+<li>IBM Cloud Databases - These are fully managed IBM Cloud hosted databases:<ul>
+<li><a href="https://cloud.ibm.com/catalog/services/databases-for-etcd#about">Etcd</a></li>
+<li><a href="https://cloud.ibm.com/catalog/services/databases-for-mongodb#about">Mongodb</a></li>
+<li><a href="https://cloud.ibm.com/catalog/services/databases-for-elasticsearch#about">Elasticsearch</a></li>
+<li><a href="https://cloud.ibm.com/catalog/services/databases-for-redis#about">Redis</a></li>
+<li><a href="https://cloud.ibm.com/catalog/services/databases-for-postgresql#about">PostgreSQL</a></li>
+</ul>
+</li>
+</ul>
+<p><a href="https://portworx.com/">Portworx</a> is a great option for supporing Multizone persistent storage but you have to also run an instance of Etcd and it is best used with Bare Metal servers which would increase the cost of your cluster and would likely be overkill for smaller dev/test environment.</p>
+<p>As an alternative we'll set up a QuantaStor server to act as an NFS Persistent Volume storage provider. Since the storage is from the local Quantastor disks and not the IBM Cloud the volumes can span multiple Datacenters.</p>
+<h2 id="quantastor">QuantaStor</h2>
+<p><a href="https://www.osnexus.com/products/software-defined-storage">QuantaStor Software Defined Storage</a> supports all major file, block, and object protocols including iSCSI/FC, NFS/SMB, and S3. It features the ability to enable encryption at rest as well as in flight.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Kubernetes cluster</li>
+<li>QuantaStor server. You can download the <a href="https://www.osnexus.com/downloads">Community edition</a> for free. QuantaStor Community Edition keys are capacity limited to 40TB of raw capacity and 4x servers per storage grid.</li>
+<li>kubectl installed. Guide <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">here</a>.</li>
+<li>slcli installed. Guide <a href="https://softlayer-api-python-client.readthedocs.io/en/latest/install/">here</a>.   </li>
+<li>helm installed on your cluster. Guide <a href="https://cloud.ibm.com/docs/containers?topic=containers-helm">here</a></li>
+</ul>
+<h2 id="steps">Steps</h2>
+<p>Here are the steps we will be going through in this guide:
+ - Use the slcli to get the IKS Worker Node IPs
+ - Create Storage Pool in QuantaStor
+ - Create QuantaStor Network Share
+ - Enable NFS access from IKS Worker node IPs
+ - Deploy NFS provisioner Helm chart
+ - Deploy example pod and write to mounted persistent volume</p>
+<h3 id="use-the-slcli-to-get-the-iks-worker-node-ip-ranges">Use the slcli to get the IKS Worker Node IP Ranges</h3>
+<p>We can gather our worker node IPs using <code>kubectl</code> and then use the <code>slcli</code> to get the subnet range that will be whitelisted for our NFS share.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$ kubectl get nodes -o json <span class="p">|</span> jq -r <span class="s1">&#39;.items[].metadata.name&#39;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="m">10</span>.184.249.15
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="m">10</span>.184.249.2
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="m">10</span>.184.249.34
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="m">10</span>.221.28.10
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="m">10</span>.221.28.37
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="m">10</span>.221.28.5
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>$ slcli --format json subnet lookup <span class="m">10</span>.184.249.15 <span class="p">|</span> jq -r <span class="s1">&#39;.subnet.identifier&#39;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="m">10</span>.184.249.0/26
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>$ slcli --format json subnet lookup <span class="m">10</span>.221.28.37 <span class="p">|</span> jq -r <span class="s1">&#39;.subnet.identifier&#39;</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="m">10</span>.221.28.0/25
+</code></pre></div>
+<h3 id="create-storage-pool-in-quantastor">Create Storage Pool in QuantaStor</h3>
+<p><img alt="Create Storage Pool in QuantaStor" src="https://dsc.cloud/quickshare/CreateStoragePool.png" /></p>
+<h3 id="create-quantastor-network-share">Create QuantaStor Network Share</h3>
+<p><img alt="Create QuantaStor Network Share 1" src="https://dsc.cloud/quickshare/CreateNetworkShare1.png" /></p>
+<p><img alt="Create QuantaStor Network Share 2" src="https://dsc.cloud/quickshare/CreateNetworkShare2.png" /></p>
+<p><img alt="Create QuantaStor Network Share 3" src="https://dsc.cloud/quickshare/NFSExportPath.png" /></p>
+<h3 id="enable-nfs-access-from-iks-worker-node-ips">Enable NFS access from IKS Worker node IPs</h3>
+<p><img alt="Enable NFS access from IKS Worker node IPs 1" src="https://dsc.cloud/quickshare/AddNFSAccess.png" /></p>
+<p><img alt="Enable NFS access from IKS Worker node IPs 2" src="https://dsc.cloud/quickshare/AddingNFSAccess.png" /></p>
+<p><img alt="Enable NFS access from IKS Worker node IPs 3" src="https://dsc.cloud/quickshare/CompletedAddingNFSAccess.png" /></p>
+<h3 id="deploy-nfs-provisioner-helm-chart">Deploy NFS provisioner Helm chart</h3>
+<p>Enter the <a href="https://github.com/helm/charts/tree/master/stable/nfs-client-provisioner">nfs-client-provisioner</a> helm chart</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$ $ helm install stable/nfs-client-provisioner --set nfs.server<span class="o">=</span><span class="m">10</span>.171.145.12 --set nfs.path<span class="o">=</span>/export/PVShare --name nfs-client
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>NAME:   nfs-client
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>LAST DEPLOYED: Fri Jan <span class="m">10</span> <span class="m">09</span>:09:10 <span class="m">2020</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>NAMESPACE: default
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>STATUS: DEPLOYED
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>RESOURCES:
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="o">==</span>&gt; v1/ClusterRole
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>NAME                                      AGE
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>nfs-client-nfs-client-provisioner-runner  <span class="nv">1s</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="o">==</span>&gt; v1/ClusterRoleBinding
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>NAME                                   AGE
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>run-nfs-client-nfs-client-provisioner  <span class="nv">1s</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="o">==</span>&gt; v1/Deployment
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>NAME                               READY  UP-TO-DATE  AVAILABLE  AGE
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>nfs-client-nfs-client-provisioner  <span class="m">0</span>/1    <span class="m">0</span>           <span class="m">0</span>          <span class="nv">1s</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="o">==</span>&gt; v1/Role
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>NAME                                              AGE
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>leader-locking-nfs-client-nfs-client-provisioner  <span class="nv">1s</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="o">==</span>&gt; v1/RoleBinding
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>NAME                                              AGE
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>leader-locking-nfs-client-nfs-client-provisioner  <span class="nv">1s</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="o">==</span>&gt; v1/ServiceAccount
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>NAME                               SECRETS  AGE
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>nfs-client-nfs-client-provisioner  <span class="m">1</span>        <span class="nv">2s</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="o">==</span>&gt; v1/StorageClass
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>NAME        PROVISIONER                                      AGE
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>nfs-client  cluster.local/nfs-client-nfs-client-provisioner  2s
+</code></pre></div>
+<p>Check that NFS is available as a storageclass.</p>
+<p>{% highlight shell %}
+$ kubectl get storageclasses | grep nfs-client
+nfs-client                   cluster.local/nfs-client-nfs-client-provisioner   104s
+{% endhighlight %}</p>
+<h3 id="deploy-example-pod-and-write-to-mounted-persistent-volume">Deploy example pod and write to mounted persistent volume</h3>
+<p>Here is an example Persistent Volume Claim yaml file.<br />
+<strong>qs-test-pvc.yml</strong></p>
+<p>{% highlight yaml %}
+ apiVersion: v1
+ kind: PersistentVolumeClaim
+ metadata:
+   name: qspvc
+ spec:
+   storageClassName: nfs-client
+   accessModes:
+     - ReadWriteMany
+   resources:
+     requests:
+       storage: 2Gi
+{% endhighlight %}</p>
+<p><strong>Create pvc</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$ kubectl create -f qs-test-pvc.yml
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>persistentvolumeclaim/qspvc created
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>$ kubectl get persistentvolumeclaim/qspvc
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>NAME    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>qspvc   Bound    pvc-3602d021-da6d-466e-8440-c79653339ee5   2Gi        RWX            nfs-client     14s
+</code></pre></div>
+<p>Here is an example pod that will write data to our new PVC.
+<strong>nfs-test-pod.yml</strong></p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span><span class="w"></span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pod-using-nfs</span><span class="w"></span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-volume</span><span class="w"></span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">      </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qspvc</span><span class="w"></span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apptest</span><span class="w"></span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alpine</span><span class="w"></span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">      </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w"></span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs-volume</span><span class="w"></span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/nfs</span><span class="w"></span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">      </span><span class="c1"># Write to a file inside our NFS</span><span class="w"></span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/bin/sh&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;-c&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;while</span><span class="nv"> </span><span class="s">true;</span><span class="nv"> </span><span class="s">do</span><span class="nv"> </span><span class="s">date</span><span class="nv"> </span><span class="s">&gt;&gt;</span><span class="nv"> </span><span class="s">/var/nfs/dates.txt;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">5;</span><span class="nv"> </span><span class="s">done&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</code></pre></div>
+<strong>Create test pod</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ kubectl create -f nfs-test-pod.yml
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>pod/pod-using-nfs created
+</code></pre></div>
+<p><strong>Read from storage</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$ kubectl <span class="nb">exec</span> -it pod/pod-using-nfs -- /bin/sh
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>/ <span class="c1"># ls -l /var/nfs/dates.txt</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>-rw-rw-rw-    <span class="m">1</span> nobody   nobody         <span class="m">261</span> Jan <span class="m">10</span> <span class="m">15</span>:24 /var/nfs/dates.txt
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>/ <span class="c1"># cat /var/nfs/dates.txt</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:23:49 UTC <span class="m">2020</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:23:54 UTC <span class="m">2020</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:23:59 UTC <span class="m">2020</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:04 UTC <span class="m">2020</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:09 UTC <span class="m">2020</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:14 UTC <span class="m">2020</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:19 UTC <span class="m">2020</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:24 UTC <span class="m">2020</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:29 UTC <span class="m">2020</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>Fri Jan <span class="m">10</span> <span class="m">15</span>:24:34 UTC <span class="m">2020</span>
+</code></pre></div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Kubernetes 101 Overview" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Kubernetes 101 Overview
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../python-examples/" class="md-footer__link md-footer__link--next" aria-label="Next: IBM Cloud Python Examples" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              IBM Cloud Python Examples
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2a1c317c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ed9748b7.min.js"></script>
+      
+    
+  </body>
+</html>
